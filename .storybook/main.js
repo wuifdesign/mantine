@@ -1,15 +1,32 @@
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin').default;
 const path = require('path');
+const { globSync } = require('glob');
 const argv = require('yargs').argv;
 
 const getPath = (storyPath) => path.resolve(__dirname, storyPath).replace(/\\/g, '/');
 
+const getStoryPaths = (fileName = '*') => {
+  const basePath = getPath('../src');
+  const files = globSync(getPath('../src/mantine-*/src/**/*.story.@(ts|tsx)'));
+  const packagesWithStories = {};
+  for(const file of files) {
+    const packageName = file.replace(basePath + '/', '').split('/')[0];
+    packagesWithStories[packageName] = true
+  }
+  return Object.keys(packagesWithStories).map((packageName) => {
+    return getPath(`../src/${packageName}/src/**/${fileName}.story.@(ts|tsx)`)
+  })
+}
+
 const storiesPath = !argv._[1]
-  ? [getPath('../src/**/*.story.@(ts|tsx)')]
+  ? [
+    // can't use glob pattern (see https://github.com/storybookjs/storybook/issues/19812)
+    ...getStoryPaths()
+  ]
   : [
-      getPath(`../src/mantine-*/**/${argv._[1]}.story.@(ts|tsx)`),
-      getPath(`../src/mantine-*/**/${argv._[1]}.demos.story.@(ts|tsx)`),
-    ];
+    ...getStoryPaths(argv._[1]),
+    ...getStoryPaths(`${argv._[1]}.demos`),
+  ];
 
 module.exports = {
   stories: storiesPath,
@@ -52,9 +69,6 @@ module.exports = {
       ],
     };
 
-    // Turn off docgen plugin as it breaks bundle with displayName
-    config.plugins.pop();
-
     return config;
   },
 
@@ -62,8 +76,7 @@ module.exports = {
     autodocs: true,
   },
 
-  features: {
-    // https://github.com/storybookjs/storybook/issues/22164
-    storyStoreV7: false,
+  typescript: {
+    reactDocgen: false,
   },
 };
