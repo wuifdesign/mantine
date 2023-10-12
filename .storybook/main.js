@@ -61,4 +61,9 @@ module.exports = {
   docs: {
     autodocs: true,
   },
+
+  features: {
+    // https://github.com/storybookjs/storybook/issues/22164
+    storyStoreV7: false,
+  },
 };
