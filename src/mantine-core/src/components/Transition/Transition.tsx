@@ -22,6 +22,9 @@ export interface TransitionProps {
   /** Determines whether component should be mounted to the DOM */
   mounted: boolean;
 
+  /** Run transition on initial render. */
+  runOnInitialRender?: boolean;
+
   /** Render function with transition styles argument */
   children: (styles: React.CSSProperties) => JSX.Element;
 
@@ -48,6 +51,7 @@ export function Transition({
   mounted,
   children,
   timingFunction = 'ease',
+  runOnInitialRender,
   onExit,
   onEntered,
   onEnter,
@@ -58,6 +62,7 @@ export function Transition({
     exitDuration,
     duration,
     timingFunction,
+    runOnInitialRender,
     onExit,
     onEntered,
     onEnter,

@@ -15,6 +15,7 @@ interface UseTransition {
   exitDuration: number;
   timingFunction: string;
   mounted: boolean;
+  runOnInitialRender?: boolean;
   onEnter?: () => void;
   onExit?: () => void;
   onEntered?: () => void;
@@ -26,6 +27,7 @@ export function useTransition({
   exitDuration,
   timingFunction,
   mounted,
+  runOnInitialRender,
   onEnter,
   onExit,
   onEntered,
@@ -35,7 +37,8 @@ export function useTransition({
   const shouldReduceMotion = useReducedMotion();
   const reduceMotion = theme.respectReducedMotion ? shouldReduceMotion : false;
   const [transitionDuration, setTransitionDuration] = useState(reduceMotion ? 0 : duration);
-  const [transitionStatus, setStatus] = useState<TransitionStatus>(mounted ? 'entered' : 'exited');
+  const initialValue = runOnInitialRender ? !mounted : mounted;
+  const [transitionStatus, setStatus] = useState<TransitionStatus>(initialValue ? 'entered' : 'exited');
   const timeoutRef = useRef<number>(-1);
 
   const handleStateChange = (shouldMount: boolean) => {
@@ -69,6 +72,12 @@ export function useTransition({
   useDidUpdate(() => {
     handleStateChange(mounted);
   }, [mounted]);
+
+  useEffect(() => {
+    if (runOnInitialRender) {
+      handleStateChange(mounted);
+    }
+  }, []);
 
   useEffect(() => () => window.clearTimeout(timeoutRef.current), []);
 

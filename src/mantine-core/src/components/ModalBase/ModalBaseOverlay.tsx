@@ -18,7 +18,7 @@ export const ModalBaseOverlay = forwardRef<HTMLDivElement, ModalBaseOverlayProps
     const transition = useModalTransition(transitionProps);
 
     return (
-      <Transition mounted={ctx.opened} {...transition} transition="fade">
+      <Transition mounted={ctx.opened} runOnInitialRender {...transition} transition="fade">
         {(transitionStyles) => (
           <Overlay
             ref={ref}

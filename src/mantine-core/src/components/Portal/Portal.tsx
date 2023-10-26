@@ -39,12 +39,12 @@ export const Portal = forwardRef<HTMLDivElement, PortalProps>((props, ref) => {
 
     assignRef(ref, nodeRef.current);
 
-    if (!target && nodeRef.current) {
+    if (!target && nodeRef.current && nodeRef.current !== document.body) {
       document.body.appendChild(nodeRef.current);
     }
 
     return () => {
-      if (!target && nodeRef.current) {
+      if (!target && nodeRef.current && nodeRef.current !== document.body) {
         document.body.removeChild(nodeRef.current);
       }
     };

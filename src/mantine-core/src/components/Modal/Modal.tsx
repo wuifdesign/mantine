@@ -13,6 +13,8 @@ import { ModalOverlay } from './ModalOverlay';
 import { ModalContent } from './ModalContent';
 import { ModalTitle } from './ModalTitle';
 import { ModalHeader } from './ModalHeader';
+import { Transition } from '../Transition';
+import { MODAL_DEFAULT_TRANSITION } from '../ModalBase/use-modal-transition';
 import classes from './Modal.module.css';
 
 export type ModalStylesNames = ModalRootStylesNames;
@@ -83,21 +85,26 @@ export const Modal = factory<ModalFactory>((_props, ref) => {
   } = useProps('Modal', defaultProps, _props);
 
   const hasHeader = !!title || withCloseButton;
+  const transition = { ...MODAL_DEFAULT_TRANSITION, ...others.transitionProps };
 
   return (
-    <ModalRoot ref={ref} radius={radius} {...others}>
-      {withOverlay && <ModalOverlay {...overlayProps} />}
-      <ModalContent radius={radius}>
-        {hasHeader && (
-          <ModalHeader>
-            {title && <ModalTitle>{title}</ModalTitle>}
-            {withCloseButton && <ModalCloseButton {...closeButtonProps} />}
-          </ModalHeader>
-        )}
+    <Transition {...transition} mounted={others.opened}>
+      {() => (
+      <ModalRoot ref={ref} radius={radius} {...others}>
+        {withOverlay && <ModalOverlay {...overlayProps} />}
+        <ModalContent radius={radius}>
+          {hasHeader && (
+            <ModalHeader>
+              {title && <ModalTitle>{title}</ModalTitle>}
+              {withCloseButton && <ModalCloseButton {...closeButtonProps} />}
+            </ModalHeader>
+          )}
 
-        <ModalBody>{children}</ModalBody>
-      </ModalContent>
-    </ModalRoot>
+          <ModalBody>{children}</ModalBody>
+        </ModalContent>
+      </ModalRoot>
+      )}
+    </Transition>
   );
 });
 

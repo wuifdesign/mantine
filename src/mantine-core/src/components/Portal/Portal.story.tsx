@@ -31,3 +31,16 @@ export function ElementTarget() {
     </>
   );
 }
+
+export function BodyTarget() {
+  return (
+    <>
+      <Portal style={{ background: 'pink' }} target={document.body}>
+        <p>First</p>
+      </Portal>
+      <Portal style={{ background: 'pink' }} target={document.body}>
+        <p>Second</p>
+      </Portal>
+    </>
+  );
+}
