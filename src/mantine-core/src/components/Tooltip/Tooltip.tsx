@@ -189,13 +189,21 @@ export const Tooltip = factory<TooltipFactory>((_props, ref) => {
   }
 
   const targetRef = useMergedRef(tooltip.reference, (children as any).ref, ref);
-  const transition = getTransitionProps(transitionProps, { duration: 100, transition: 'fade' });
+  const transition = getTransitionProps(transitionProps, { duration: 1000, transition: 'fade' });
+
+  transition.duration = 2000;
 
   return (
     <>
-      <OptionalPortal {...portalProps} withinPortal={withinPortal}>
+      <OptionalPortal
+        {...portalProps}
+        mounted={opened}
+        unmountDelay={transition.duration}
+        withinPortal={withinPortal}
+      >
         <Transition
           {...transition}
+          runOnInitialRender
           keepMounted={keepMounted}
           mounted={!disabled && !!tooltip.opened}
           duration={tooltip.isGroupPhase ? 10 : transition.duration}

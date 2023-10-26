@@ -85,26 +85,21 @@ export const Modal = factory<ModalFactory>((_props, ref) => {
   } = useProps('Modal', defaultProps, _props);
 
   const hasHeader = !!title || withCloseButton;
-  const transition = { ...MODAL_DEFAULT_TRANSITION, ...others.transitionProps };
 
   return (
-    <Transition {...transition} mounted={others.opened}>
-      {() => (
-        <ModalRoot ref={ref} radius={radius} {...others}>
-          {withOverlay && <ModalOverlay {...overlayProps} />}
-          <ModalContent radius={radius}>
-            {hasHeader && (
-              <ModalHeader>
-                {title && <ModalTitle>{title}</ModalTitle>}
-                {withCloseButton && <ModalCloseButton {...closeButtonProps} />}
-              </ModalHeader>
-            )}
+    <ModalRoot ref={ref} radius={radius} {...others}>
+      {withOverlay && <ModalOverlay {...overlayProps} />}
+      <ModalContent radius={radius}>
+        {hasHeader && (
+          <ModalHeader>
+            {title && <ModalTitle>{title}</ModalTitle>}
+            {withCloseButton && <ModalCloseButton {...closeButtonProps} />}
+          </ModalHeader>
+        )}
 
-            <ModalBody>{children}</ModalBody>
-          </ModalContent>
-        </ModalRoot>
-      )}
-    </Transition>
+        <ModalBody>{children}</ModalBody>
+      </ModalContent>
+    </ModalRoot>
   );
 });
 

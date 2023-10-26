@@ -70,9 +70,15 @@ export const PopoverDropdown = factory<PopoverDropdownFactory>((_props, ref) => 
   }
 
   return (
-    <OptionalPortal {...ctx.portalProps} withinPortal={ctx.withinPortal}>
+    <OptionalPortal
+      {...ctx.portalProps}
+      mounted={ctx.opened}
+      unmountDelay={ctx.transitionProps?.duration}
+      withinPortal={ctx.withinPortal}
+    >
       <Transition
         mounted={ctx.opened}
+        runOnInitialRender
         {...ctx.transitionProps}
         transition={ctx.transitionProps?.transition || 'fade'}
         duration={ctx.transitionProps?.duration ?? 150}

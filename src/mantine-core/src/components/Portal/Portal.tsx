@@ -1,7 +1,8 @@
 /* eslint-disable react/no-unused-prop-types */
-import React, { useRef, useState, forwardRef } from 'react';
+import React, { useRef, useState, forwardRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useIsomorphicEffect, assignRef } from '@mantine/hooks';
+import { Timeout } from 'react-number-format/types/types';
 import { useProps } from '../../core';
 
 function createPortalNode(props: React.ComponentPropsWithoutRef<'div'>) {
@@ -19,20 +20,58 @@ export interface PortalProps extends React.ComponentPropsWithoutRef<'div'> {
 
   /** Element inside which portal should be created, by default a new div element is created and appended to the `document.body` */
   target?: HTMLElement | string;
+
+  /** Render Portal content. */
+  mounted?: boolean;
+
+  /** Delay until the Portal is unmounted. Used to allow transitions to finish before unmounting. */
+  unmountDelay?: number;
 }
 
-const defaultProps: Partial<PortalProps> = {};
+const defaultProps: Partial<PortalProps> = {
+  mounted: true,
+};
 
 export const Portal = forwardRef<HTMLDivElement, PortalProps>((props, ref) => {
-  const { children, target, ...others } = useProps('Portal', defaultProps, props);
+  const { children, mounted, unmountDelay, target, ...others } = useProps('Portal', defaultProps, props);
 
-  const [mounted, setMounted] = useState(false);
+  const [targetMounted, setTargetMounted] = useState(false);
+  const unmountTimeout = useRef<Timeout | null>(null);
   const nodeRef = useRef<HTMLElement | null>(null);
 
+  useEffect(() => () => {
+    if (unmountTimeout.current) {
+      if (!target && nodeRef.current && nodeRef.current !== document.body) {
+        document.body.removeChild(nodeRef.current);
+      }
+      clearTimeout(unmountTimeout.current);
+    }
+  }, []);
+
   useIsomorphicEffect(() => {
-    setMounted(true);
+    if (!mounted) {
+      unmountTimeout.current = setTimeout(() => {
+        if (!target && nodeRef.current && nodeRef.current !== document.body) {
+           document.body.removeChild(nodeRef.current);
+        }
+        setTargetMounted(false);
+      }, unmountDelay);
+      return;
+    }
+    if (unmountTimeout.current) {
+      clearTimeout(unmountTimeout.current);
+    }
+    setTargetMounted(true);
+
+    const getNode = () => {
+      if (others.className || others.style || others.id) {
+        return createPortalNode(others);
+      }
+      return document.body;
+    };
+
     nodeRef.current = !target
-      ? createPortalNode(others)
+      ? getNode()
       : typeof target === 'string'
       ? document.querySelector(target)
       : target;
@@ -42,15 +81,9 @@ export const Portal = forwardRef<HTMLDivElement, PortalProps>((props, ref) => {
     if (!target && nodeRef.current && nodeRef.current !== document.body) {
       document.body.appendChild(nodeRef.current);
     }
+  }, [target, mounted]);
 
-    return () => {
-      if (!target && nodeRef.current && nodeRef.current !== document.body) {
-        document.body.removeChild(nodeRef.current);
-      }
-    };
-  }, [target]);
-
-  if (!mounted || !nodeRef.current) {
+  if (!targetMounted || !nodeRef.current) {
     return null;
   }
 

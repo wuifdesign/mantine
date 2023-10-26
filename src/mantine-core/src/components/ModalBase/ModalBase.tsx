@@ -100,7 +100,12 @@ export const ModalBase = forwardRef<HTMLDivElement, ModalBaseProps>(
       useModal({ id, transitionProps, opened, trapFocus, closeOnEscape, onClose, returnFocus });
 
     return (
-      <OptionalPortal {...portalProps} withinPortal={withinPortal}>
+      <OptionalPortal
+        {...portalProps}
+        mounted={opened}
+        unmountDelay={transitionProps?.duration}
+        withinPortal={withinPortal}
+      >
         <ModalBaseProvider
           value={{
             opened,
