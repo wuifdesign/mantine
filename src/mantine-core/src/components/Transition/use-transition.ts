@@ -38,7 +38,9 @@ export function useTransition({
   const reduceMotion = theme.respectReducedMotion ? shouldReduceMotion : false;
   const [transitionDuration, setTransitionDuration] = useState(reduceMotion ? 0 : duration);
   const initialValue = runOnInitialRender ? !mounted : mounted;
-  const [transitionStatus, setStatus] = useState<TransitionStatus>(initialValue ? 'entered' : 'exited');
+  const [transitionStatus, setStatus] = useState<TransitionStatus>(
+    initialValue ? 'entered' : 'exited'
+  );
   const timeoutRef = useRef<number>(-1);
 
   const handleStateChange = (shouldMount: boolean) => {

@@ -90,19 +90,19 @@ export const Modal = factory<ModalFactory>((_props, ref) => {
   return (
     <Transition {...transition} mounted={others.opened}>
       {() => (
-      <ModalRoot ref={ref} radius={radius} {...others}>
-        {withOverlay && <ModalOverlay {...overlayProps} />}
-        <ModalContent radius={radius}>
-          {hasHeader && (
-            <ModalHeader>
-              {title && <ModalTitle>{title}</ModalTitle>}
-              {withCloseButton && <ModalCloseButton {...closeButtonProps} />}
-            </ModalHeader>
-          )}
+        <ModalRoot ref={ref} radius={radius} {...others}>
+          {withOverlay && <ModalOverlay {...overlayProps} />}
+          <ModalContent radius={radius}>
+            {hasHeader && (
+              <ModalHeader>
+                {title && <ModalTitle>{title}</ModalTitle>}
+                {withCloseButton && <ModalCloseButton {...closeButtonProps} />}
+              </ModalHeader>
+            )}
 
-          <ModalBody>{children}</ModalBody>
-        </ModalContent>
-      </ModalRoot>
+            <ModalBody>{children}</ModalBody>
+          </ModalContent>
+        </ModalRoot>
       )}
     </Transition>
   );
